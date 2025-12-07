@@ -1,0 +1,17 @@
+===== LOG DO PROCESSO DE NORMALIZACAO =====
+
+
+=======================================
+ LEITURA DA GRAMATICA A PARTIR DO ARQUIVO
+=======================================
+
+Gramática carregada com sucesso.
+Variaveis: A B BBAA BC C S 
+Terminais: 0 1 
+Simbolo inicial: S
+Producoes:
+ A -> 01 | 1B1
+ B -> BBAA | C0101 | B11 | &
+ C -> C10A | BC
+ S -> A01BC | &
+

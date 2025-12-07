@@ -1,122 +1,61 @@
 #include <iostream>
-#include <fstream>
-#include <sstream>
 #include "grammar.hpp"
 #include "parser.hpp"
+#include "logger.hpp"
 
 using namespace std;
 
 int main() {
-    cout << "\n=== LENDO ARQUIVO entrada.txt ===\n\n";
+    string entrada = "entrada.txt";
+    string logFile = "log.txt";
 
-    ifstream in("entrada.txt");
-    if (!in) {
-        cerr << "Erro: não foi possível abrir entrada.txt\n";
-        return 1;
-    }
+    try {
+        // Iniciar log
+        startLog(logFile);
+        logTitle(logFile, "LEITURA DA GRAMATICA A PARTIR DO ARQUIVO");
 
-    Grammar G;
-    string line;
-    bool primeira = true;
+        // Ler gramática
+        Grammar G = readGrammar(entrada);
 
-    while (getline(in, line)) {
-        cout << "Linha lida: \"" << line << "\"\n";
+        // Registrar gramática lida
+        writeLog(logFile, "Gramática carregada com sucesso.");
+        logGrammar(logFile, G);
 
-        line = trim(line);
-        if (line.empty()) {
-            cout << " -> Linha vazia, ignorada.\n\n";
-            continue;
-        }
-
-        // Encontrar ->
-        size_t pos = line.find("->");
-        if (pos == string::npos) {
-            cout << " -> Não contém '->', ignorada.\n\n";
-            continue;
-        }
-
-        string left = trim(line.substr(0, pos));
-        string right = trim(line.substr(pos + 2));
-
-        cout << "  Lado esquerdo (variável): " << left << "\n";
-        cout << "  Lado direito bruto: " << right << "\n";
-
-        if (primeira) {
-            G.S = left;
-            primeira = false;
-            cout << "  -> Definido como símbolo inicial: " << G.S << "\n";
-        }
-
-        G.V.insert(left);
-        cout << "  -> Variável adicionada ao conjunto V\n";
-
-        // Quebrar por |
-        stringstream ss(right);
-        string alt;
-
-        while (getline(ss, alt, '|')) {
-            alt = trim(alt);
-            cout << "  Alternativa encontrada: \"" << alt << "\"\n";
-
-            if (alt == "&") {
-                cout << "    -> Esta alternativa é λ\n";
-                G.P[left].push_back({});
-                continue;
-            }
-
-            auto tokens = tokenizeR_side(alt);
-
-            cout << "    Tokens gerados:\n";
-            for (auto &t : tokens) {
-                cout << "      [" << t << "] -> ";
-
-                if (isVariable(t)) {
-                    cout << "Variável\n";
-                    G.V.insert(t);
-                } else {
-                    cout << "Terminal\n";
-                    G.T.insert(t);
-                }
-            }
-
-            // Guardar produção
-            G.P[left].push_back(tokens);
-        }
-
+        // Mostrar no terminal também
+        cout << "\nGramática carregada:\n";
+        cout << "Variáveis: ";
+        for (auto &v : G.V) cout << v << " ";
         cout << "\n";
-    }
 
-    // Exibir estrutura final ---------------------------
-    cout << "\n=========== RESUMO FINAL ===========\n";
-
-    cout << "\nVariáveis (G.V): ";
-    for (auto &v : G.V) cout << v << " ";
-    cout << "\n";
-
-    cout << "\nTerminais (G.T): ";
-    for (auto &t : G.T) cout << t << " ";
-    cout << "\n";
-
-    cout << "\nSímbolo inicial (G.S): " << G.S << "\n";
-
-    cout << "\nProduções (G.P):\n";
-    for (auto &kv : G.P) {
-        cout << "  " << kv.first << " -> ";
-        bool first = true;
-        for (auto &right : kv.second) {
-            if (!first) cout << " | ";
-            first = false;
-
-            if (right.empty()) {
-                cout << "&";
-            } else {
-                for (auto &s : right) cout << s;
-            }
-        }
+        cout << "Terminais: ";
+        for (auto &t : G.T) cout << t << " ";
         cout << "\n";
-    }
 
-    cout << "\n=====================================\n";
+        cout << "Símbolo inicial: " << G.S << "\n";
+
+        cout << "Produções:\n";
+        for (auto &kv : G.P) {
+            cout << "  " << kv.first << " -> ";
+            bool first = true;
+            for (auto &rhs : kv.second) {
+                if (!first) cout << " | ";
+                first = false;
+                if (rhs.empty())
+                    cout << "&";
+                else
+                    for (auto &s : rhs) cout << s;
+            }
+            cout << "\n";
+        }
+
+        // Aviso final
+        cout << "\n=== LOG GERADO EM: " << logFile << " ===\n";
+
+    } catch (exception &e) {
+        cerr << "Erro: " << e.what() << endl;
+        writeLog(logFile, string("Erro: ") + e.what());
+    }
 
     return 0;
 }
+
