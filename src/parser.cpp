@@ -28,27 +28,15 @@ bool isVariable(const std::string &x) {
 std::vector<std::string> tokenizeR_side(const std::string &right) {
     std::vector<std::string> result;
 
-    for(size_t i = 0; i < right.size(); ) {
+    for (size_t i = 0; i < right.size(); i++) {
         char c = right[i];
 
         if (std::isupper((unsigned char)c)) {
-            // Lê uma sequência de variáveis maiúsculas
-            size_t j = i + 1;
-
-            while (j < right.size() &&
-                   std::isupper((unsigned char)right[j])) {
-                j++;   
-            }
-
-            // extrai a variável completa
-            result.push_back(right.substr(i, j - i));
-
-            i = j; // avança
-        }
-        else {
-            // terminal de 1 caractere
+            // Variável = 1 caractere maiúsculo
             result.push_back(std::string(1, c));
-            i++;
+        } else {
+            // Terminal = 1 caractere não maiúsculo
+            result.push_back(std::string(1, c));
         }
     }
 

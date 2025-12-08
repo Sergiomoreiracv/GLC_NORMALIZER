@@ -1,61 +1,62 @@
 #include <iostream>
-#include "grammar.hpp"
+#include <string>
 #include "parser.hpp"
+#include "lambda.hpp"
+#include "unit.hpp"
+#include "useless.hpp"
+#include "cnf.hpp"
+#include "greibach.hpp"
 #include "logger.hpp"
 
 using namespace std;
 
 int main() {
-    string entrada = "entrada.txt";
-    string logFile = "log.txt";
+    string inputFile;
+    string optionStr;
+    int option = 0;
 
-    try {
-        // Iniciar log
-        startLog(logFile);
-        logTitle(logFile, "LEITURA DA GRAMATICA A PARTIR DO ARQUIVO");
+    cout << "Digite o caminho do arquivo de entrada (.txt) que contem a GLC:" << endl;
+    getline(cin, inputFile);
 
-        // Ler gramática
-        Grammar G = readGrammar(entrada);
+    cout << "Escolha a normalizacao desejada:" << endl
+         << " 1 - Forma Normal de Chomsky (FNC / CNF)" << endl
+         << " 2 - Forma Normal de Greibach (FNG / GNF)" << endl
+         << " 3 - Apenas remover lambda, unitarias e simbolos inuteis" << endl;
+    getline(cin, optionStr);
 
-        // Registrar gramática lida
-        writeLog(logFile, "Gramática carregada com sucesso.");
-        logGrammar(logFile, G);
-
-        // Mostrar no terminal também
-        cout << "\nGramática carregada:\n";
-        cout << "Variáveis: ";
-        for (auto &v : G.V) cout << v << " ";
-        cout << "\n";
-
-        cout << "Terminais: ";
-        for (auto &t : G.T) cout << t << " ";
-        cout << "\n";
-
-        cout << "Símbolo inicial: " << G.S << "\n";
-
-        cout << "Produções:\n";
-        for (auto &kv : G.P) {
-            cout << "  " << kv.first << " -> ";
-            bool first = true;
-            for (auto &rhs : kv.second) {
-                if (!first) cout << " | ";
-                first = false;
-                if (rhs.empty())
-                    cout << "&";
-                else
-                    for (auto &s : rhs) cout << s;
-            }
-            cout << "\n";
-        }
-
-        // Aviso final
-        cout << "\n=== LOG GERADO EM: " << logFile << " ===\n";
-
-    } catch (exception &e) {
-        cerr << "Erro: " << e.what() << endl;
-        writeLog(logFile, string("Erro: ") + e.what());
+    if (optionStr.empty()) {
+        cout << "Opcao invalida. Saindo." << endl;
+        return 0;
     }
+
+    option = stoi(optionStr);
+
+    if (option < 1 || option > 3) {
+        cout << "Opcao invalida. Saindo." << endl;
+        return 0;
+    }
+
+    string logFile = inputFile.substr(0, inputFile.find_last_of('.')) + "_log.txt";
+    startLog(logFile);
+
+    writeLog(logFile, "===== LOG DO PROCESSO DE NORMALIZACAO =====\n");
+
+    Grammar G = readGrammar(inputFile);
+
+    // Pipeline padrao
+    removeLambda(G, logFile);
+    removeUnitProductions(G, logFile);
+    removeUselessSymbols(G, logFile);
+
+    if (option == 1)
+        toCNF(G, logFile);
+    else if (option == 2)
+        toGreibach(G, logFile);
+
+    writeLog(logFile, "\nNormalizacao concluida.\n");
+
+    cout << "\nProcesso concluido. Log salvo em: " << logFile << endl;
+    cout << "Confira o arquivo de log para ver as gramaticas intermediarias e detalhes." << endl;
 
     return 0;
 }
-

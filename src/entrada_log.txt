@@ -1,29 +1,6 @@
 ===== LOG DO PROCESSO DE NORMALIZACAO =====
 
-
-=======================================
- INICIO DO PROCESSO DE NORMALIZACAO
-=======================================
-
-Lendo arquivo de entrada: entrada.txt
-=> Gramatica carregada com sucesso.
-Variaveis: A B C D E F G H I J K L S 
-Terminais:   a b e 
-Simbolo inicial: S
-Producoes:
- A -> aA | B | a
- B -> bB | C | b
- C -> aC | D
- D -> &
- E -> F
- F -> e
- G -> H
- H -> G
- I -> J K L
- J -> a
- K -> B
- L -> C
- S -> AB | aA | &
+===== LOG DO PROCESSO DE NORMALIZACAO =====
 
 
 =======================================
@@ -124,10 +101,26 @@ Producoes:
 
 
 =======================================
- CONVERSAO PARA FORMA NORMAL DE CHOMSKY (FNC)
+ CONVERSAO PARA FORMA NORMAL DE GREIBACH (FNG)
 =======================================
 
-=> Estado inicial (antes CNF):
+Ordem das variaveis (fixa):
+A B C S 
+Processando variavel: A
+ Nenhuma substituicao/recursao imediata para A
+Processando variavel: B
+ Nenhuma substituicao/recursao imediata para B
+Processando variavel: C
+ Nenhuma substituicao/recursao imediata para C
+Processando variavel: S
+Detalhes de substituicoes / recursao para S:
+  Substituicao: S -> AB  =>  S -> aAB
+  Substituicao: S -> AB  =>  S -> aB
+  Substituicao: S -> AB  =>  S -> bBB
+  Substituicao: S -> AB  =>  S -> bB
+  Substituicao: S -> AB  =>  S -> aCB
+Tentativa final de substituir producoes que comecam por variavel.
+=> Gramática (tentativa) em Forma Normal de Greibach:
 Variaveis: A B C S 
 Terminais: a b 
 Simbolo inicial: S
@@ -135,53 +128,9 @@ Producoes:
  A -> aA | a | bB | b | aC
  B -> bB | b | aC | a
  C -> aC | a
- S -> aA | a | bB | b | aC | AB | &
+ S -> aA | a | bB | b | aC | aAB | aB | bBB | bB | aCB | &
 
-=> Substituindo terminais em RHS com comprimento >= 2 por variáveis auxiliares
-Criada variavel auxiliar: T1 -> a
-Criada variavel auxiliar: T2 -> b
-Gramática após substituição de terminais em RHS longos:
-Variaveis: A B C S T1 T2 
-Terminais: a b 
-Simbolo inicial: S
-Producoes:
- A -> T1A | a | T2B | b | T1C
- B -> T2B | b | T1C | a
- C -> T1C | a
- S -> T1A | a | T2B | b | T1C | AB | &
- T1 -> a
- T2 -> b
+Conversão para GNF (tentativa) concluída.
 
-=> Binarizando producoes: transformar RHS com len>2 em cadeias binarias
-Gramática após binarizacao:
-Variaveis: A B C S T1 T2 
-Terminais: a b 
-Simbolo inicial: S
-Producoes:
- A -> T1A | a | T2B | b | T1C
- B -> T2B | b | T1C | a
- C -> T1C | a
- S -> T1A | a | T2B | b | T1C | AB | &
- T1 -> a
- T2 -> b
-
-=> Limpando producoes inválidas (garantir apenas A->a ou A->B C).
-=> Gramática final em FNC:
-Variaveis: A B C S T1 T2 
-Terminais: a b 
-Simbolo inicial: S
-Producoes:
- A -> T1A | a | T2B | b | T1C
- B -> T2B | b | T1C | a
- C -> T1C | a
- S -> T1A | a | T2B | b | T1C | AB | &
- T1 -> a
- T2 -> b
-
-Conversão para FNC concluída.
 Normalizacao concluida.
-
-=======================================
- FIM
-=======================================
 
