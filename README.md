@@ -1,93 +1,108 @@
-#  GLC_NORMALIZER  
-### Ferramenta para Normalização de Gramáticas Livres de Contexto (GLC)  
-**Suporte completo para:**
-✔ Remoção de regras-λ (lambda) 
-✔ Remoção de produções unitárias 
-✔ Remoção de símbolos inúteis 
-✔ Conversão para Forma Normal de Chomsky (FNC / CNF) 
-✔ Conversão para Forma Normal de Greibach (FNG / GNF) 
-✔ Geração de log com todas as gramáticas intermediárias 
+# GLC Normalizer --- Normalização de Gramáticas Livres de Contexto
 
----
+Este projeto implementa, em C++, uma ferramenta capaz de **ler uma
+gramática livre de contexto (GLC)** a partir de um arquivo `.txt` e
+**normalize-la** conforme a opção escolhida pelo usuário:
 
-## 📘 Sobre o Projeto
+-   **Remoção de regras-λ (lambda)**
+-   **Remoção de produções unitárias**
+-   **Remoção de símbolos inúteis**
+-   **Conversão para Forma Normal de Chomsky (FNC/CNF)**
+-   **Conversão para Forma Normal de Greibach (FNG/GNF)**
 
-Este projeto implementa uma ferramenta completa em **C++** para normalização de Gramáticas Livres de Contexto (GLC).  
-Ele foi desenvolvido seguindo os requisitos acadêmicos da disciplina de Linguagens Formais e Autômatos, permitindo que o usuário:
+Como saída, o programa gera um arquivo `.txt` contendo **um log
+completo**, detalhando passo a passo todas as transformações realizadas
+na gramática.
 
-- Forneça uma gramática a partir de um arquivo `.txt`
-- Escolha o tipo de normalização desejada
-- Receba como saída um arquivo de log detalhado contendo **cada etapa da normalização**
+------------------------------------------------------------------------
 
-O programa está modularizado em arquivos independentes:
+##  Características principais
 
-- `lambda.cpp` → remoção de regras-λ 
-- `unit.cpp` → remoção de produções unitárias 
-- `useless.cpp` → remoção de símbolos inúteis 
-- `cnf.cpp` → conversão para Forma Normal de Chomsky 
-- `greibach.cpp` → conversão para Forma Normal de Greibach 
-- `parser.cpp` → interpretação da gramática de entrada 
-- `logger.cpp` → geração do log passo a passo 
-- `main.cpp` → interface principal de interação com o usuário 
+✔️ Aceita gramática **completa ou reduzida**\
+✔️ Interpreta **&** como palavra vazia\
+✔️ Gera **log detalhado** de cada etapa\
+✔️ Suporta normalização para **FNC (Chomsky)**\
+✔️ Suporta normalização para **FNG (Greibach)**\
+✔️ Implementado com módulos claros e independentes\
+✔️ Fácil de compilar e executar em qualquer sistema Linux ou Windows
+(WSL)
 
----
+------------------------------------------------------------------------
 
-## 📄 Formato do arquivo de entrada
+## 📁 Estrutura do Projeto
 
-A gramática pode ser inserida em **forma completa ou reduzida**
-O símbolo `&` representa a palavra vazia (lambda).
+    GLC_NORMALIZER/
+    │
+    ├── include/
+    │   ├── grammar.hpp
+    │   ├── parser.hpp
+    │   ├── lambda.hpp
+    │   ├── unit.hpp
+    │   ├── useless.hpp
+    │   ├── cnf.hpp
+    │   ├── greibach.hpp
+    │   ├── logger.hpp
+    │
+    ├── src/
+    │   ├── main.cpp
+    │   ├── parser.cpp
+    │   ├── lambda.cpp
+    │   ├── unit.cpp
+    │   ├── useless.cpp
+    │   ├── cnf.cpp
+    │   ├── greibach.cpp
+    │   ├── logger.cpp
+    │   ├── entrada.txt
+    │   └── teste
+    │
+    └── README.md
 
----
+------------------------------------------------------------------------
 
-## 📤 Saída (arquivo de log)
+## 📄 Como compilar
 
-O programa gera automaticamente um arquivo:
+``` bash
+cd src
+g++ -std=c++17 main.cpp parser.cpp logger.cpp lambda.cpp unit.cpp useless.cpp cnf.cpp greibach.cpp -I../include -o teste
+```
 
-Nele constam:
+------------------------------------------------------------------------
 
-- A gramática inicial
-- A identificação e remoção de regras-λ
-- A nova gramática gerada após cada passo
-- Remoção das unitárias
-- Remoção dos símbolos inúteis
-- Conversão final (FNC ou FNG)
+## ▶️ Como executar
 
-Cada etapa é cuidadosamente documentada de forma legível.
+``` bash
+./teste
+```
 
----
+------------------------------------------------------------------------
 
-## ▶️ Como compilar
+## ✏️ Formato da entrada (entrada.txt)
 
-No diretório `src`, execute:
+    S -> AB | aA | &
+    A -> aA | B | a
+    B -> bB | C | b
+    C -> aC | D
+    D -> &
 
-g++ -std=c++17 main.cpp parser.cpp logger.cpp lambda.cpp unit.cpp useless.cpp cnf.cpp greibach.cpp -I../include -o glc_normalizer
+------------------------------------------------------------------------
 
-Estrutura do Projeto
-/GLC_NORMALIZER
-│
-├── include/
-│   ├── grammar.hpp
-│   ├── logger.hpp
-│   ├── parser.hpp
-│   ├── lambda.hpp
-│   ├── unit.hpp
-│   ├── useless.hpp
-│   ├── cnf.hpp
-│   ├── greibach.hpp
-│
-├── src/
-│   ├── main.cpp
-│   ├── parser.cpp
-│   ├── logger.cpp
-│   ├── lambda.cpp
-│   ├── unit.cpp
-│   ├── useless.cpp
-│   ├── cnf.cpp
-│   ├── greibach.cpp
-│
-└── README.md
+## 📘 Exemplo de saída (trecho do log)
 
-Autores: 
-Sérgio Moreira 
-Iure 
+    =======================================
+     REMOCAO DE REGRAS-LAMBDA
+    =======================================
+
+    Variáveis anuláveis: A B C D S
+    Produções após remoção:
+    A -> aA | a | B
+    B -> bB | b | C
+    S -> AB | B | A | aA | a | &
+
+------------------------------------------------------------------------
+
+## 👨‍💻 Autor
+
+**Sergio Moreira**
+**Iure Morais**
+------------------------------------------------------------------------
 
